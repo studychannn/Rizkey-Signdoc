@@ -22,7 +22,7 @@ SignDoc adalah aplikasi web tanda tangan digital berbasis Flask yang memungkinka
 
 - Registrasi akun dengan generate RSA-2048 keypair otomatis
 - Kunci privat dienkripsi AES-256 menggunakan password user — tidak pernah disimpan plain
-- Upload dokumen (PDF, DOCX, TXT, PNG, JPG) dengan hashing SHA-256 otomatis
+- Upload dokumen (PDF) dengan hashing SHA-256 otomatis
 - Tanda tangan dokumen menggunakan kunci privat user (RSA-PSS)
 - Multi-signer — satu dokumen bisa ditandatangani oleh banyak pengguna
 - Sistem undangan penandatangan — pemilik dokumen bisa mengundang user lain
