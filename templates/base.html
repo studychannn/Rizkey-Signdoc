@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RizKey SignDoc{% endblock %}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: #f4f6f9; color: #1a2332; min-height: 100vh; }
+
+        /* Navbar */
+        nav {
+            background: linear-gradient(135deg, #0a2540 0%, #1a3a5c 100%);
+            padding: 0 2.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+            position: sticky; top: 0; z-index: 100;
+        }
+        nav .brand {
+            color: white; font-size: 1.25rem; font-weight: 800;
+            text-decoration: none; display: flex; align-items: center; gap: 10px;
+            letter-spacing: -0.3px;
+        }
+        nav .brand .logo-box {
+            width: 36px; height: 36px; background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; box-shadow: 0 2px 8px rgba(14,165,233,0.4);
+        }
+        nav .brand .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+        nav .brand .brand-main { font-size: 1rem; font-weight: 800; color: white; }
+        nav .brand .brand-sub { font-size: 0.65rem; font-weight: 400; color: rgba(255,255,255,0.55); letter-spacing: 0.08em; text-transform: uppercase; }
+        nav .nav-links { display: flex; gap: 2px; align-items: center; }
+        nav .nav-links a {
+            color: rgba(255,255,255,0.75); text-decoration: none;
+            padding: 7px 14px; border-radius: 6px; font-size: 0.875rem; font-weight: 500;
+            transition: all 0.2s;
+        }
+        nav .nav-links a:hover { background: rgba(255,255,255,0.1); color: white; }
+        nav .nav-links a.active { background: rgba(255,255,255,0.15); color: white; font-weight: 600; }
+        nav .nav-user {
+            display: flex; align-items: center; gap: 10px;
+            padding: 5px 12px 5px 8px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+        }
+        nav .nav-user .avatar {
+            width: 28px; height: 28px; border-radius: 6px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem;
+        }
+        nav .nav-user .uname { color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: 500; }
+        nav .nav-user a { color: rgba(255,255,255,0.5); font-size: 0.78rem; text-decoration: none; }
+        nav .nav-user a:hover { color: white; }
+
+        /* Main */
+        main { max-width: 1140px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #64748b; font-size: 0.85rem; font-weight: 500;
+            text-decoration: none; padding: 6px 12px;
+            border: 1px solid #e2e8f0; border-radius: 6px;
+            background: white; margin-bottom: 1.25rem;
+            transition: all 0.2s; cursor: pointer;
+        }
+        .back-btn:hover { border-color: #0ea5e9; color: #0284c7; background: #f0f9ff; }
+
+        /* Cards */
+        .card {
+            background: white; border-radius: 14px; padding: 1.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid #e8edf2;
+        }
+        .card-title {
+            font-size: 1.05rem; font-weight: 700; color: #0a2540;
+            margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
+            padding-bottom: 0.75rem; border-bottom: 2px solid #f1f5f9;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 9px 18px; border-radius: 8px; border: none;
+            cursor: pointer; font-size: 0.875rem; font-weight: 600;
+            text-decoration: none; transition: all 0.2s; letter-spacing: 0.01em;
+        }
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; box-shadow: 0 2px 8px rgba(14,165,233,0.3); }
+        .btn-primary:hover { background: linear-gradient(135deg, #0284c7, #0369a1); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.4); }
+        .btn-secondary { background: white; color: #475569; border: 1.5px solid #e2e8f0; }
+        .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .btn-danger:hover { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+        .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+        .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; box-shadow: 0 2px 8px rgba(34,197,94,0.3); }
+
+        /* Forms */
+        .form-group { margin-bottom: 1.1rem; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #374151; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 14px;
+            border: 1.5px solid #e2e8f0; border-radius: 8px;
+            font-size: 0.925rem; transition: all 0.2s; outline: none;
+            background: #fafbfc; color: #1a2332;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14,165,233,0.12); background: white; }
+
+        /* Alerts */
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem; display: flex; align-items: flex-start; gap: 10px; font-weight: 500; }
+        .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .alert-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .alert-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; }
+        .badge-valid { background: #dcfce7; color: #166534; }
+        .badge-invalid { background: #fee2e2; color: #991b1b; }
+        .badge-warning { background: #fef9c3; color: #854d0e; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+        .badge-neutral { background: #f1f5f9; color: #475569; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 14px; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid #f1f5f9; background: #fafbfc; }
+        td { padding: 13px 14px; font-size: 0.875rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafbfc; }
+
+        /* Hash display */
+        .hash { font-family: 'Courier New', monospace; font-size: 0.78rem; color: #64748b; background: #f8fafc; padding: 3px 8px; border-radius: 5px; word-break: break-all; border: 1px solid #e2e8f0; }
+
+        /* Page header */
+        .page-header { margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid #e8edf2; }
+        .page-header h1 { font-size: 1.6rem; font-weight: 800; color: #0a2540; letter-spacing: -0.5px; }
+        .page-header p { color: #64748b; margin-top: 5px; font-size: 0.925rem; }
+
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            nav { padding: 0 1rem; }
+            nav .nav-links { display: none; }
+            main { padding: 0 1rem; margin: 1rem auto; }
+            .page-header h1 { font-size: 1.25rem; }
+            .card { padding: 1.25rem; }
+            .stat-card { padding: 1rem 1.25rem; }
+            .stat-card .number { font-size: 1.75rem; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 8px 10px; }
+            .hash { font-size: 0.7rem; }
+            .btn { font-size: 0.8rem; padding: 7px 12px; }
+            .signer-item { padding: 10px 12px; }
+        }
+
+        /* Stat cards */
+        .stat-card { border-radius: 14px; padding: 1.4rem 1.6rem; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); }
+        .stat-card .number { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+        .stat-card .label { font-size: 0.82rem; opacity: 0.85; margin-top: 3px; font-weight: 500; }
+        .stat-blue { background: linear-gradient(135deg, #0a2540, #1a3a5c); color: white; }
+        .stat-teal { background: linear-gradient(135deg, #0d9488, #0f766e); color: white; }
+        .stat-indigo { background: linear-gradient(135deg, #4f46e5, #4338ca); color: white; }
+
+        /* Signer item */
+        .signer-item { padding: 14px 16px; background: #fafbfc; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e8edf2; transition: border-color 0.2s; }
+        .signer-item:hover { border-color: #0ea5e9; }
+        .signer-avatar { width: 38px; height: 38px; border-radius: 9px; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; }
+
+        /* Upload area */
+        .upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 2.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: #fafbfc; }
+        .upload-area:hover { background: #f0f9ff; border-color: #0ea5e9; }
+        .upload-area .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+        /* Divider */
+        hr { border: none; border-top: 1px solid #e8edf2; margin: 1.5rem 0; }
+
+        /* Section label */
+        .section-label { font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+
+        /* Status banner */
+        .status-valid { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac; border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .status-invalid { background: linear-gradient(135deg, #fef2f2, #fee2e2); border: 1px solid #fca5a5; border-radius: 12px; padding: 1.5rem; text-align: center; }
+
+        footer { text-align: center; padding: 2.5rem; color: #94a3b8; font-size: 0.82rem; border-top: 1px solid #e8edf2; margin-top: 3rem; }
+        footer strong { color: #64748b; }
+    </style>
+</head>
+<body>
+
+{% if current_user.is_authenticated %}
+<nav>
+    <a href="{{ url_for('docs.dashboard') }}" class="brand">
+        <div class="logo-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L3 7V12C3 16.55 6.84 20.74 12 22C17.16 20.74 21 16.55 21 12V7L12 2Z" fill="white" fill-opacity="0.9"/>
+                <path d="M9 12L11 14L15 10" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="brand-text">
+            <span class="brand-main">RizKey SignDoc</span>
+            <span class="brand-sub">Digital Signature Platform</span>
+        </div>
+    </a>
+    <div class="nav-links">
+        <a href="{{ url_for('docs.dashboard') }}" class="{{ 'active' if request.endpoint == 'docs.dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('docs.upload') }}" class="{{ 'active' if request.endpoint == 'docs.upload' }}">Upload</a>
+        <a href="{{ url_for('verify.verify') }}" class="{{ 'active' if request.endpoint == 'verify.verify' }}">Verifikasi</a>
+        <a href="{{ url_for('docs.history') }}" class="{{ 'active' if request.endpoint == 'docs.history' }}">Riwayat</a>
+    </div>
+    <div class="nav-user">
+        <div class="avatar">{{ current_user.username[0].upper() }}</div>
+        <div>
+            <div class="uname">{{ current_user.username }}</div>
+            <a href="{{ url_for('auth.logout') }}">Keluar</a>
+        </div>
+    </div>
+</nav>
+{% endif %}
+
+<main>
+    {% if current_user.is_authenticated %}
+    <a href="javascript:history.back()" class="back-btn">← Kembali</a>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {% if category == 'success' %}✅{% elif category == 'error' %}❌{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <strong>RizKey SignDoc</strong> &mdash; Platform Tanda Tangan Digital &copy; 2026 &mdash; Proyek Akhir Kriptografi Modern
+</footer>
+</body>
+</html>

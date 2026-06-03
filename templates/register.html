@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Registrasi — RizKey SignDoc{% endblock %}
+{% block content %}
+<div style="max-width: 500px; margin: 2.5rem auto;">
+    <div style="text-align:center; margin-bottom: 2rem;">
+        <div style="width:64px; height:64px; background:linear-gradient(135deg,#0a2540,#1a3a5c); border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:0 auto 1rem;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L3 7V12C3 16.55 6.84 20.74 12 22C17.16 20.74 21 16.55 21 12V7L12 2Z" fill="white" fill-opacity="0.9"/>
+                <path d="M9 12L11 14L15 10" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h1 style="font-size:1.75rem; font-weight:800; color:#0a2540; letter-spacing:-0.5px;">Buat Akun Baru</h1>
+        <p style="color:#64748b; margin-top:6px; font-size:0.925rem;">RizKey SignDoc - Tanda tangan berbasis digital</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Formulir Registrasi</div>
+        <form method="POST">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Pilih username unik" required autofocus>
+            </div>
+            <div class="form-group">
+                <label>Alamat Email</label>
+                <input type="email" name="email" placeholder="email@contoh.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password <span style="color:#94a3b8; font-weight:400; text-transform:none;">(digunakan untuk enkripsi kunci privat)</span></label>
+                <input type="password" name="password" placeholder="Minimal 8 karakter" required minlength="8">
+            </div>
+            <div class="form-group" style="margin-bottom:1.5rem;">
+                <label>Algoritma Tanda Tangan Digital</label>
+                <div style="padding:12px 16px; background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:10px; font-size:0.9rem; color:#0a2540;">
+                    <strong>RSA-2048</strong>
+                </div>
+                <input type="hidden" name="key_type" value="rsa">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px; font-size:0.95rem;" id="submitBtn" onclick="this.disabled=true; this.innerHTML='⏳ Membangkitkan Key Pair...'; this.form.submit();">
+                Buat Akun
+            </button>
+        </form>
+        <hr>
+        <p style="text-align:center; font-size:0.875rem; color:#64748b;">
+            Sudah punya akun? <a href="{{ url_for('auth.login') }}" style="color:#0284c7; font-weight:600;">Masuk</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

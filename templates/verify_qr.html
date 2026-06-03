@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi QR — {{ doc.original_filename }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0fdf4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header .logo {
+            font-size: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f766e;
+            margin-top: 8px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .doc-info {
+            background: #f0fdf4;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #bbf7d0;
+        }
+
+        .doc-info .label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .doc-info .value {
+            font-weight: 600;
+            color: #0f766e;
+            margin-top: 2px;
+        }
+
+        .hash {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #64748b;
+            word-break: break-all;
+        }
+
+        .signer-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .signer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .badge-valid {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-invalid {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔏</div>
+            <h1>SignDoc Verifikasi</h1>
+            <p>Hasil verifikasi via QR Code</p>
+        </div>
+
+        <div class="doc-info">
+            <div class="label">Nama Dokumen</div>
+            <div class="value">{{ doc.original_filename }}</div>
+            <div class="label" style="margin-top:8px;">Hash SHA-256</div>
+            <div class="hash">{{ doc.file_hash }}</div>
+            <div class="label" style="margin-top:8px;">Diupload oleh</div>
+            <div class="value">{{ doc.uploader.username }}</div>
+        </div>
+
+        <div style="font-weight:600; color:#475569; margin-bottom:0.75rem;">
+            ✍️ Penandatangan ({{ sig_results|length }})
+        </div>
+
+        {% for sig in sig_results %}
+        <div class="signer-card" style="flex-direction:column; align-items:flex-start; gap:10px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                <div class="signer-info">
+                    <div class="avatar">{{ sig.signer[0].upper() }}</div>
+                    <div>
+                        <div style="font-weight:600;">{{ sig.signer }}</div>
+                        <div style="font-size:0.8rem; color:#64748b;">{{ sig.signed_at }}</div>
+                    </div>
+                </div>
+                {% if sig.valid %}
+                <span class="badge-valid">✅ Valid</span>
+                {% else %}
+                <span class="badge-invalid">❌ Invalid</span>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+        {% if not sig_results %}
+        <div style="text-align:center; padding:1.5rem; color:#94a3b8;">Belum ada tanda tangan</div>
+        {% endif %}
+
+        <footer>SignDoc — Kriptografi Modern &copy; 2026</footer>
+    </div>
+</body>
+
+</html>

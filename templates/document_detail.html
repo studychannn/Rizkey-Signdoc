@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% block title %}{{ doc.original_filename }} — SignDoc{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ doc.original_filename }}</h1>
+    <p>Detail dokumen dan status tanda tangan digital</p>
+</div>
+
+{% if modified %}
+<div class="alert alert-error">
+    ⚠️ <strong>PERINGATAN:</strong> Dokumen ini terdeteksi telah dimodifikasi setelah ditandatangani.
+    Hash saat ini tidak cocok dengan hash asli saat penandatanganan.
+</div>
+{% endif %}
+
+<div class="grid-2">
+    <!-- Document Info -->
+    <div class="card">
+        <div class="card-title">📋 Informasi Dokumen</div>
+        <table>
+            <tr>
+                <td
+                    style="color:#64748b; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; width:42%;">
+                    Nama File</td>
+                <td style="font-weight:600; color:#0a2540;">{{ doc.original_filename }}</td>
+            </tr>
+            <tr>
+                <td
+                    style="color:#64748b; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">
+                    Diunggah oleh</td>
+                <td style="font-weight:500;">{{ doc.uploader.username }}</td>
+            </tr>
+            <tr>
+                <td
+                    style="color:#64748b; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">
+                    Tanggal Unggah</td>
+                <td>{{ doc.uploaded_at.strftime('%d %b %Y, %H:%M') }}</td>
+            </tr>
+            <tr>
+                <td
+                    style="color:#64748b; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">
+                    Hash SHA-256 Asli
+                    {% if modified %}<span style="color:#16a34a; font-size:0.75rem;">(saat upload)</span>{% endif %}
+                </td>
+                <td><span class="hash" style="{% if modified %}color:#16a34a; border-color:#86efac;{% endif %}">{{ doc.file_hash }}</span></td>
+            </tr>
+            {% if modified %}
+            <tr>
+                <td
+                    style="color:#64748b; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">
+                    Hash SHA-256 Sekarang
+                    <span style="color:#dc2626; font-size:0.75rem;">(sudah berubah!)</span>
+                </td>
+                <td>
+                    <span class="hash" style="color:#dc2626; border-color:#fca5a5;">{{ current_hash }}</span>
+                    <div style="margin-top:6px; font-size:0.78rem; color:#dc2626; background:#fff1f1; border:1px solid #fca5a5; border-radius:6px; padding:6px 10px;">
+                        ⚠️ Hash berbeda dari hash asli saat upload. Dokumen telah dimodifikasi.
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td
+                    style="color:#64748b; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;">
+                    Status Integritas</td>
+                <td>
+                    {% if modified %}
+                    <span class="badge badge-invalid">⚠️ Dokumen Dimodifikasi</span>
+                    {% else %}
+                    <span class="badge badge-valid">✅ Integritas Terjaga</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        {% if doc.qr_code_path %}
+        <hr>
+        <div style="text-align:center;">
+            <div class="section-label">QR Code Verifikasi Cepat</div>
+            <img src="{{ url_for('static', filename='qrcodes/doc_' + doc.id|string + '.png') }}" alt="QR Code"
+                style="width:150px; height:150px; border-radius:10px; border:1.5px solid #e2e8f0; padding:6px; background:white;">
+            <p style="font-size:0.78rem; color:#94a3b8; margin-top:6px;">Pindai untuk verifikasi tanpa login</p>
+            {% if is_owner %}
+            <form method="POST" action="{{ url_for('docs.regenerate_qr', doc_id=doc.id) }}" style="margin-top:8px;">
+                <button type="submit" class="btn btn-secondary btn-sm"
+                    style="font-size:0.78rem; padding:5px 14px;"
+                    onclick="return confirm('Regenerate QR code dengan IP jaringan saat ini?')">
+                    🔄 Regenerate QR
+                </button>
+            </form>
+            <p style="font-size:0.72rem; color:#94a3b8; margin-top:4px;">
+                Klik jika QR tidak bisa discan dari HP
+            </p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <hr>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            {% if signatures %}
+            <a href="{{ url_for('docs.download_signed', doc_id=doc.id) }}" class="btn btn-primary btn-sm">⬇️ Download
+                Bertanda Tangan</a>
+            {% endif %}
+            <a href="{{ url_for('docs.export_pdf', doc_id=doc.id) }}" class="btn btn-secondary btn-sm">📥 Export Laporan
+                PDF</a>
+        </div>
+    </div>
+
+    <!-- Kanan: Penandatangan + Form Sign + Undang -->
+    <div>
+        <!-- Daftar Penandatangan -->
+        <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">
+                ✍️ Penandatangan
+                <span class="badge badge-neutral" style="font-size:0.8rem;">{{ signatures|length }}</span>
+            </div>
+            {% if signatures %}
+            {% for sig in signatures %}
+            <div class="signer-item">
+                <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div class="signer-avatar">{{ sig.signer.username[0].upper() }}</div>
+                        <div>
+                            <div style="font-weight:700; color:#0a2540;">{{ sig.signer.username }}</div>
+                            <div style="font-size:0.8rem; color:#64748b; margin-top:1px;">
+                                {{ sig.signed_at.strftime('%d %b %Y, %H:%M') }}
+                            </div>
+                            <div class="hash" style="margin-top:4px;">{{ sig.doc_hash_at_signing[:24] }}...</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        {% if sig.doc_hash_at_signing == doc.file_hash %}
+                        <span class="badge badge-valid">✅ Valid</span>
+                        {% else %}
+                        <span class="badge badge-invalid">❌ Hash Berubah</span>
+                        {% endif %}
+                        <div
+                            style="margin-top:6px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; padding:4px 10px; font-size:0.78rem; color:#475569;">
+                            ID: <strong style="color:#0284c7; font-size:0.95rem;">{{ sig.id }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    style="width:100%; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:8px 12px; font-size:0.8rem; color:#92400e; display:flex; align-items:center; justify-content:space-between; margin-top:10px; flex-wrap:wrap; gap:6px;">
+                    <span>Gunakan Signature ID <strong>{{ sig.id }}</strong> untuk verifikasi</span>
+                    <div style="display:flex; gap:6px;">
+                        <button
+                            onclick="navigator.clipboard.writeText('{{ sig.id }}'); this.textContent='✅ Disalin!'; setTimeout(()=>this.textContent='Salin ID',1500)"
+                            class="btn btn-secondary btn-sm">Salin ID</button>
+                        <a href="{{ url_for('docs.download_signature_file', sig_id=sig.id) }}"
+                            class="btn btn-secondary btn-sm">⬇️ .sig</a>
+                        <a href="{{ url_for('docs.download_pubkey', user_id=sig.user_id) }}"
+                            class="btn btn-secondary btn-sm">⬇️ pubkey</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div style="text-align:center; padding:2rem; color:#94a3b8;">
+                <div style="font-size:2rem; margin-bottom:0.5rem;">✍️</div>
+                <p style="font-weight:500;">Belum ada penandatangan</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Form Tanda Tangan -->
+        {% if not already_signed %}
+        {% if is_owner or my_invitation %}
+        <div class="card" style="margin-bottom:1rem;">
+            <div class="card-title">🔏 Tandatangani Dokumen</div>
+            {% if my_invitation %}
+            <div class="alert alert-info" style="margin-bottom:1rem;">
+                ℹ️ Anda diundang oleh <strong>{{ my_invitation.inviter.username }}</strong> untuk menandatangani dokumen
+                ini.
+            </div>
+            {% endif %}
+            <p style="font-size:0.875rem; color:#64748b; margin-bottom:1.25rem; line-height:1.6;">
+                Masukkan password akun Anda untuk menandatangani dokumen secara kriptografis menggunakan kunci privat
+                RSA-2048.
+            </p>
+            <form method="POST" action="{{ url_for('docs.sign_doc', doc_id=doc.id) }}" id="signForm">
+                <div class="form-group">
+                    <label>Password Akun <span style="color:#ef4444;">*</span></label>
+                    <input type="password" name="password" placeholder="Masukkan password Anda" required
+                        autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;"
+                    id="signBtn" onclick="this.disabled=true; this.innerHTML='⏳ Memproses...'; this.form.submit();">
+                    🔏 Tanda Tangani Dokumen
+                </button>
+            </form>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="card" style="margin-bottom:1rem;">
+            <div style="text-align:center; padding:1.5rem;">
+                <div style="font-size:2.5rem; margin-bottom:0.5rem;">✅</div>
+                <p style="font-weight:700; color:#166534; font-size:1rem;">Anda telah menandatangani dokumen ini</p>
+                <p style="font-size:0.85rem; color:#64748b; margin-top:4px;">Tanda tangan kriptografis Anda tersimpan
+                    dengan aman</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Form Undang Penandatangan (hanya pemilik) -->
+        {% if is_owner %}
+        <div class="card">
+            <div class="card-title">📨 Undang Penandatangan</div>
+            <p style="font-size:0.875rem; color:#64748b; margin-bottom:1.25rem; line-height:1.6;">
+                Masukkan username pengguna terdaftar yang ingin Anda undang untuk menandatangani dokumen ini.
+            </p>
+            <form method="POST" action="{{ url_for('docs.invite_signer', doc_id=doc.id) }}">
+                <div class="form-group">
+                    <label>Username <span style="color:#ef4444;">*</span></label>
+                    <input type="text" name="username" placeholder="Contoh: budi123" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-success" style="width:100%; justify-content:center; padding:11px;">
+                    📨 Kirim Undangan
+                </button>
+            </form>
+
+            <!-- Daftar undangan yang sudah dikirim -->
+            {% if sent_invitations %}
+            <hr>
+            <div class="section-label">Riwayat Undangan</div>
+            {% for inv in sent_invitations %}
+            <div
+                style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="signer-avatar" style="width:28px; height:28px; font-size:0.75rem;">
+                        {{ inv.invitee.username[0].upper() }}
+                    </div>
+                    <div>
+                        <div style="font-weight:600; font-size:0.875rem;">{{ inv.invitee.username }}</div>
+                        <div style="font-size:0.75rem; color:#94a3b8;">{{ inv.created_at.strftime('%d %b %Y, %H:%M') }}
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    {% if inv.status == 'pending' %}
+                    <span class="badge badge-warning">⏳ Menunggu</span>
+                    {% elif inv.status == 'signed' %}
+                    <span class="badge badge-valid">✅ Sudah TTD</span>
+                    {% elif inv.status == 'declined' %}
+                    <span class="badge badge-invalid">✕ Ditolak</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

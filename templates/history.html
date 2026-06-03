@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Riwayat — RizKey SignDoc{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Riwayat Tanda Tangan</h1>
+    <p>Seluruh dokumen yang pernah Anda tandatangani secara digital</p>
+</div>
+
+<div class="card">
+    {% if signatures %}
+    <table>
+        <thead>
+            <tr>
+                <th>Signature ID</th>
+                <th>Nama Dokumen</th>
+                <th>Hash saat Penandatanganan</th>
+                <th>Waktu</th>
+                <th>Integritas</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for sig in signatures %}
+        <tr>
+            <td><span class="badge badge-neutral"># {{ sig.id }}</span></td>
+            <td>
+                <div style="font-weight:600; color:#0a2540;">{{ sig.document.original_filename }}</div>
+                <div style="font-size:0.78rem; color:#94a3b8; margin-top:2px;">oleh {{ sig.document.uploader.username }}</div>
+            </td>
+            <td><span class="hash">{{ sig.doc_hash_at_signing[:24] }}...</span></td>
+            <td style="white-space:nowrap; color:#64748b; font-size:0.85rem;">{{ sig.signed_at.strftime('%d %b %Y %H:%M') }}</td>
+            <td>
+                {% if sig.doc_hash_at_signing == sig.document.file_hash %}
+                <span class="badge badge-valid">✅ Integritas OK</span>
+                {% else %}
+                <span class="badge badge-invalid">⚠️ Hash Berubah</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('docs.document_detail', doc_id=sig.document_id) }}" class="btn btn-secondary btn-sm">Detail</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align:center; padding: 3.5rem; color:#94a3b8;">
+        <div style="font-size:3rem; margin-bottom:0.75rem;">📭</div>
+        <p style="font-weight:600; font-size:1rem;">Belum ada riwayat tanda tangan</p>
+        <p style="font-size:0.875rem; margin-top:4px;">Mulai dengan mengunggah dan menandatangani dokumen</p>
+        <a href="{{ url_for('docs.upload') }}" class="btn btn-primary" style="margin-top:1.25rem;">Unggah Dokumen Pertama</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

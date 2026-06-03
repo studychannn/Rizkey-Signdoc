@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — SignDoc{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Selamat Datang, {{ current_user.username }}</h1>
+    <p>Kelola dan tandatangani dokumen digital Anda dengan aman</p>
+</div>
+
+<!-- Stats -->
+<div class="grid-3" style="margin-bottom: 2rem;">
+    <div class="stat-card stat-blue">
+        <div class="number">{{ my_docs|length }}</div>
+        <div class="label">📄 Dokumen Diunggah</div>
+    </div>
+    <div class="stat-card stat-teal">
+        <div class="number">{{ signed_docs|length }}</div>
+        <div class="label">✍️ Dokumen Ditandatangani</div>
+    </div>
+    <div class="stat-card stat-indigo">
+        <div class="number">{{ pending_invitations|length }}</div>
+        <div class="label">📨 Undangan Menunggu</div>
+    </div>
+</div>
+
+<!-- Undangan Menunggu -->
+{% if pending_invitations %}
+<div class="card" style="margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
+    <div class="card-title">📨 Undangan Menunggu Tanda Tangan</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Dokumen</th>
+                <th>Diundang oleh</th>
+                <th>Tanggal Undangan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for inv in pending_invitations %}
+            <tr>
+                <td>
+                    <div style="font-weight:600; color:#0a2540;">{{ inv.document.original_filename }}</div>
+                    <div class="hash" style="margin-top:4px;">{{ inv.document.file_hash[:20] }}...</div>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="signer-avatar" style="width:28px; height:28px; font-size:0.75rem;">
+                            {{ inv.inviter.username[0].upper() }}
+                        </div>
+                        <span style="font-weight:500;">{{ inv.inviter.username }}</span>
+                    </div>
+                </td>
+                <td style="color:#64748b; font-size:0.85rem;">{{ inv.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+                <td>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <a href="{{ url_for('docs.document_detail', doc_id=inv.document_id) }}"
+                            class="btn btn-primary btn-sm">✍️ Tanda Tangani</a>
+                        <form method="POST" action="{{ url_for('docs.decline_invitation', invitation_id=inv.id) }}"
+                            style="display:inline;"
+                            onsubmit="return confirm('Tolak undangan dari {{ inv.inviter.username }}?')">
+                            <button type="submit" class="btn btn-secondary btn-sm">✕ Tolak</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+<div class="grid-2">
+    <!-- My Documents -->
+    <div class="card">
+        <div class="card-title">📁 Dokumen Saya</div>
+        {% if my_docs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Dokumen</th>
+                    <th>Penandatangan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in my_docs %}
+                <tr>
+                    <td>
+                        <div style="font-weight:600; color:#0a2540;">{{ doc.original_filename }}</div>
+                        <div class="hash" style="margin-top:4px;">{{ doc.file_hash[:20] }}...</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-info">{{ doc.signatures|length }} penandatangan</span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('docs.document_detail', doc_id=doc.id) }}"
+                            class="btn btn-secondary btn-sm">Detail</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center; padding: 2.5rem; color:#94a3b8;">
+            <div style="font-size:2.5rem; margin-bottom:0.5rem;">📭</div>
+            <p style="font-weight:500;">Belum ada dokumen</p>
+            <p style="font-size:0.85rem; margin-top:4px;">Mulai dengan mengunggah dokumen pertama Anda</p>
+        </div>
+        {% endif %}
+        <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid #f1f5f9;">
+            <a href="{{ url_for('docs.upload') }}" class="btn btn-primary btn-sm">+ Unggah Dokumen</a>
+        </div>
+    </div>
+
+    <!-- Signed by me -->
+    <div class="card">
+        <div class="card-title">✍️ Dokumen yang Saya Tandatangani</div>
+        {% if signed_docs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Dokumen</th>
+                    <th>Pemilik</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in signed_docs %}
+                <tr>
+                    <td>
+                        <div style="font-weight:600; color:#0a2540;">{{ doc.original_filename }}</div>
+                    </td>
+                    <td style="color:#64748b; font-size:0.85rem;">{{ doc.uploader.username }}</td>
+                    <td>
+                        <a href="{{ url_for('docs.document_detail', doc_id=doc.id) }}"
+                            class="btn btn-secondary btn-sm">Detail</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center; padding: 2.5rem; color:#94a3b8;">
+            <div style="font-size:2.5rem; margin-bottom:0.5rem;">✍️</div>
+            <p style="font-weight:500;">Belum ada dokumen ditandatangani</p>
+        </div>
+        {% endif %}
+        <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid #f1f5f9;">
+            <a href="{{ url_for('verify.verify') }}" class="btn btn-secondary btn-sm">🔍 Verifikasi Dokumen</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

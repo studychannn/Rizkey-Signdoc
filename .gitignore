@@ -1,0 +1,26 @@
+# Virtual environment
+venv/
+env/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Database (data lokal)
+instance/
+*.db
+
+# Upload files (data user)
+uploads/
+
+# QR codes generated
+static/qrcodes/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

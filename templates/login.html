@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Masuk — RizKey SignDoc{% endblock %}
+{% block content %}
+<div style="min-height: calc(100vh - 120px); display:flex; align-items:center; justify-content:center; margin: -2rem -1.5rem; padding: 2rem 1.5rem;">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; max-width:900px; width:100%; border-radius:20px; overflow:hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.12);">
+
+        <!-- Sisi Kiri — Dekoratif -->
+        <div style="background: linear-gradient(145deg, #0a2540 0%, #0d3b6e 50%, #0284c7 100%); padding: 3rem; display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden;">
+            <!-- Background circles dekoratif -->
+            <div style="position:absolute; top:-40px; right:-40px; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,0.05);"></div>
+            <div style="position:absolute; bottom:-60px; left:-30px; width:220px; height:220px; border-radius:50%; background:rgba(255,255,255,0.04);"></div>
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:300px; height:300px; border-radius:50%; background:rgba(14,165,233,0.06);"></div>
+
+            <!-- Logo & Brand -->
+            <div style="position:relative; z-index:1;">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:2.5rem;">
+                    <div style="width:44px; height:44px; background:rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L3 7V12C3 16.55 6.84 20.74 12 22C17.16 20.74 21 16.55 21 12V7L12 2Z" fill="white" fill-opacity="0.9"/>
+                            <path d="M9 12L11 14L15 10" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="color:white; font-weight:800; font-size:1.1rem; letter-spacing:-0.3px;">RizKey SignDoc</div>
+                        <div style="color:rgba(255,255,255,0.5); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em;">Digital Signature Platform</div>
+                    </div>
+                </div>
+
+                <h2 style="color:white; font-size:1.6rem; font-weight:800; line-height:1.3; letter-spacing:-0.5px; margin-bottom:1rem;">
+                    Tanda Tangan Digital<br>yang Dapat Dipercaya
+                </h2>
+                <p style="color:rgba(255,255,255,0.65); font-size:0.9rem; line-height:1.7;">
+                    Buktikan keaslian dokumen anda.
+                </p>
+            </div>
+
+            <!-- Feature list -->
+            <div style="position:relative; z-index:1;">
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:10px; color:rgba(255,255,255,0.8); font-size:0.85rem;">
+                        <div style="width:28px; height:28px; background:rgba(255,255,255,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">🔐</div>
+                        Enkripsi kunci privat AES-256
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; color:rgba(255,255,255,0.8); font-size:0.85rem;">
+                        <div style="width:28px; height:28px; background:rgba(255,255,255,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✍️</div>
+                        Tanda tangan RSA-2048 terverifikasi
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; color:rgba(255,255,255,0.8); font-size:0.85rem;">
+                        <div style="width:28px; height:28px; background:rgba(255,255,255,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">🔍</div>
+                        Deteksi modifikasi dokumen otomatis
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sisi Kanan — Form Login -->
+        <div style="background:white; padding:3rem;">
+            <div style="margin-bottom:2rem;">
+                <h1 style="font-size:1.5rem; font-weight:800; color:#0a2540; letter-spacing:-0.5px;">Masuk ke Akun</h1>
+                <p style="color:#64748b; margin-top:6px; font-size:0.9rem;">Selamat datang kembali</p>
+            </div>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" placeholder="Masukkan username" required autofocus>
+                </div>
+                <div class="form-group" style="margin-bottom:1.5rem;">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px; font-size:0.95rem;">
+                    Masuk ke Sistem
+                </button>
+            </form>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <p style="text-align:center; font-size:0.875rem; color:#64748b;">
+                Belum punya akun? <a href="{{ url_for('auth.register') }}" style="color:#0284c7; font-weight:600;">Daftar Sekarang</a>
+            </p>
+
+            <p style="text-align:center; margin-top:1.25rem; font-size:0.75rem; color:#94a3b8;">
+                Dilindungi enkripsi RSA-2048 &amp; AES-256
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+@media (max-width: 768px) {
+    div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    div[style*="background: linear-gradient(145deg"] {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
