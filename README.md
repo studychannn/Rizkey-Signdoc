@@ -19,7 +19,7 @@ Buka browser: http://localhost:5000
 **Wajib:**
 - Registrasi + generate RSA-2048 atau ECDSA P-256 key pair
 - Kunci privat dienkripsi AES-256 dengan password user
-- Upload dokumen (PDF, TXT, DOCX, PNG, JPG) + hash SHA-256
+- Upload dokumen (PDF) + hash SHA-256
 - Tanda tangani dokumen dengan kunci privat
 - Verifikasi tanda tangan (VALID/INVALID + detail)
 - Riwayat dokumen per user
